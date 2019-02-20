@@ -1,0 +1,11 @@
+---
+version: '3'
+services:
+  go:
+    image: bazel/cmd/go:go_container
+    command:
+      - -redirects-file=/redirects.json
+    ports:
+      - 80:8080
+    volumes:
+      - ./redirects.json:/redirects.json

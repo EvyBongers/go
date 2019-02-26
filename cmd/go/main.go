@@ -13,14 +13,12 @@ import (
 )
 
 var (
-	shortUrls = map[string]string{}
+	shortUrls     = map[string]string{}
+	redirectsFile = ""
 )
 
-func init() {
-	redirectsFile := flag.String("redirects-file", "", "CSV file that contains the redirect mapping")
-	flag.Parse()
-
-	file, err := os.Open(*redirectsFile)
+func load_redirects() {
+	file, err := os.Open(redirectsFile)
 	redirects, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Fatal(err)
@@ -32,6 +30,18 @@ func init() {
 }
 
 func main() {
+	flag.StringVar(&redirectsFile, "redirects-file", "", "CSV file that contains the redirect mapping")
+	flag.Parse()
+
+	if redirectsFile == "" {
+		log.Fatalf("Redirects file not specified!\n")
+	}
+	if _, err := os.Stat(redirectsFile); os.IsNotExist(err) {
+		log.Fatalf("File %s does not exist!\n", redirectsFile)
+	}
+
+	load_redirects()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", landingPageHandler)
 	r.HandleFunc("/{shortUrl:[a-z]+}", redirectHandler)

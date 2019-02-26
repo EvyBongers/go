@@ -1,2 +1,2 @@
 /bazel-*
-/deployments/redirects.json
+/deployments/var/redirects.json

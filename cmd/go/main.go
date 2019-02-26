@@ -8,13 +8,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
 var (
-	shortUrls     = map[string]string{}
-	redirectsFile = ""
+	shortUrls         = map[string]string{}
+	redirectsFile     = ""
+	redirectsFileInfo os.FileInfo
 )
 
 func load_redirects() {
@@ -24,6 +26,7 @@ func load_redirects() {
 		log.Fatal(err)
 	}
 
+	shortUrls = map[string]string{}
 	if err = json.Unmarshal(redirects, &shortUrls); err != nil {
 		log.Fatal(err)
 	}
@@ -36,11 +39,29 @@ func main() {
 	if redirectsFile == "" {
 		log.Fatalf("Redirects file not specified!\n")
 	}
-	if _, err := os.Stat(redirectsFile); os.IsNotExist(err) {
+	redirectsFileInfo, err := os.Stat(redirectsFile)
+	if os.IsNotExist(err) {
 		log.Fatalf("File %s does not exist!\n", redirectsFile)
 	}
 
 	load_redirects()
+
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+
+			redirectsFileNewInfo, err := os.Stat(redirectsFile)
+			if err != nil {
+				log.Printf("Failed to stat redirects file %s: %v", err)
+			}
+
+			if redirectsFileInfo.ModTime().Before(redirectsFileNewInfo.ModTime()) {
+				log.Printf("Redirects file was modified, reloading.")
+				redirectsFileInfo = redirectsFileNewInfo
+				load_redirects()
+			}
+		}
+	}()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", landingPageHandler)

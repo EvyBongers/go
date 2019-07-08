@@ -1,2 +1,3 @@
 /bazel-*
 /deployments/var/redirects.json
+*.swp

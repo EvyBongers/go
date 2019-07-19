@@ -8,13 +8,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
 var (
-	shortUrls         = map[string]string{}
+	shortUrlMap       = map[string]string{}
 	redirectsFile     = ""
 	redirectsFileInfo os.FileInfo
 )
@@ -26,8 +27,8 @@ func load_redirects() {
 		log.Fatal(err)
 	}
 
-	shortUrls = map[string]string{}
-	if err = json.Unmarshal(redirects, &shortUrls); err != nil {
+	shortUrlMap = map[string]string{}
+	if err = json.Unmarshal(redirects, &shortUrlMap); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -70,6 +71,15 @@ func main() {
 }
 
 func landingPageHandler(w http.ResponseWriter, r *http.Request) {
+	shortUrls := make([]string, len(shortUrlMap))
+
+	i := 0
+	for k := range shortUrlMap {
+		shortUrls[i] = k
+		i++
+	}
+	sort.Strings(shortUrls)
+
 	writeBuffer(w, "<!DOCTYPE html>")
 	writeBuffer(w, "<html lang=\"en\">")
 	writeBuffer(w, "  <head>")
@@ -87,10 +97,10 @@ func landingPageHandler(w http.ResponseWriter, r *http.Request) {
 	writeBuffer(w, "        </tr>")
 	writeBuffer(w, "      </thead>")
 	writeBuffer(w, "      <tbody>")
-	for shortUrl, targetUrl := range shortUrls {
+	for _, shortUrl := range shortUrls {
 		writeBuffer(w, "        <tr>")
 		writeBuffer(w, "          <td>/"+shortUrl+"</td>")
-		writeBuffer(w, "          <td>"+targetUrl+"</td>")
+		writeBuffer(w, "          <td>"+shortUrlMap[shortUrl]+"</td>")
 		writeBuffer(w, "        </tr>")
 	}
 	writeBuffer(w, "      </tbody>")
@@ -101,7 +111,7 @@ func landingPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	shortUrl := mux.Vars(r)["shortUrl"]
-	url, ok := shortUrls[shortUrl]
+	url, ok := shortUrlMap[shortUrl]
 	if !ok {
 		http.Error(w, fmt.Sprintf("ShortURL %s does not exist", shortUrl), http.StatusNotFound)
 		return

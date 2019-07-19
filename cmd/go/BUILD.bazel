@@ -16,8 +16,6 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
-glob(["templates/*.html"])
-
 container_image(
     name = "go_container",
     entrypoint = ["/go"],

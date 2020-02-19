@@ -99,7 +99,7 @@ func landingPageHandler(w http.ResponseWriter, r *http.Request) {
 	writeBuffer(w, "      <tbody>")
 	for _, shortUrl := range shortUrls {
 		writeBuffer(w, "        <tr>")
-		writeBuffer(w, "          <td>/"+shortUrl+"</td>")
+		writeBuffer(w, "          <td><a href=\"/"+shortUrl+"\">/"+shortUrl+"</a></td>")
 		writeBuffer(w, "          <td>"+shortUrlMap[shortUrl]+"</td>")
 		writeBuffer(w, "        </tr>")
 	}

@@ -11,6 +11,8 @@ import (
 	"sort"
 	"time"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/gorilla/mux"
 )
 
@@ -28,8 +30,10 @@ func load_redirects() {
 	}
 
 	shortUrlMap = map[string]string{}
-	if err = json.Unmarshal(redirects, &shortUrlMap); err != nil {
-		log.Fatal(err)
+	if err = yaml.Unmarshal(redirects, &shortUrlMap); err != nil {
+		if err = json.Unmarshal(redirects, &shortUrlMap); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

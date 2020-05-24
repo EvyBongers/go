@@ -4,7 +4,7 @@ services:
   go:
     image: bazel/cmd/go:go_container
     command:
-      - -redirects-file=/var/redirects.json
+      - -redirects-file=/var/redirects.yaml
     ports:
       - 80:8080
     volumes:

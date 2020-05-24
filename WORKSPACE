@@ -2,17 +2,20 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "9fb16af4d4836c8222142e54c9efa0bb5fc562ffc893ce2abeac3e25daead144",
+    sha256 = "87f0fb9747854cb76a0a82430adccb6269f7d394237104a4523b51061c469171",
     urls = [
-        "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/rules_go/releases/download/0.19.0/rules_go-0.19.0.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/0.19.0/rules_go-0.19.0.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.23.1/rules_go-v0.23.1.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.23.1/rules_go-v0.23.1.tar.gz",
     ],
 )
 
 http_archive(
     name = "bazel_gazelle",
-    sha256 = "3c681998538231a2d24d0c07ed5a7658cb72bfb5fd4bf9911157c0e9ac6a2687",
-    urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/0.17.0/bazel-gazelle-0.17.0.tar.gz"],
+    sha256 = "bfd86b3cbe855d6c16c6fce60d76bd51f5c8dbc9cfcaef7a2bb5c1aafd0710e8",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/v0.21.0/bazel-gazelle-v0.21.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.21.0/bazel-gazelle-v0.21.0.tar.gz",
+    ],
 )
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
@@ -27,9 +30,9 @@ gazelle_dependencies()
 
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "87fc6a2b128147a0a3039a2fd0b53cc1f2ed5adb8716f50756544a572999ae9a",
-    strip_prefix = "rules_docker-0.8.1",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.8.1.tar.gz"],
+    sha256 = "",
+    strip_prefix = "rules_docker-0.14.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.14.1.tar.gz"],
 )
 
 load(
@@ -39,12 +42,19 @@ load(
 
 container_repositories()
 
-load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
 
 go_repository(
     name = "com_github_gorilla_mux",
     importpath = "github.com/gorilla/mux",
-    sha256 = "5aca5bfa16325506b23b66ce34e2b9336a3a341b8c51ba7b0faf7d0daade0116",
-    strip_prefix = "mux-1.7.0",
-    urls = ["https://github.com/gorilla/mux/archive/v1.7.0.tar.gz"],
+    sha256 = "56ea3c39b8c19360357970a4dcd717485f36ac7da9c6b5a107bd4b80848c4aee",
+    strip_prefix = "mux-1.7.4",
+    urls = ["https://github.com/gorilla/mux/archive/v1.7.4.tar.gz"],
 )
